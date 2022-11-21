@@ -1,50 +1,28 @@
 defmodule M do
   def flat_map_test do
-    list = [1,[2],[3,4], [5,[6]], [[7, [8, 9, [10]]]]]
+    list = [1,[2],[3,4], [[5],[6]], [[7, [8, 9, [10]]]]]
+    # reduce the list of sublists into a flattened list
     answer = Enum.reduce(list, [], fn x, acc -> acc  ++ flatten_list(x) end)
     IO.inspect answer
   end
 
+  # Returns a flattened list
+  # arg: list or single value
   def flatten_list(list) do
-    # IO.puts "begin list"
-    # IO.inspect list
-    # IO.puts "-----"
-    if is_list(list) do
+    if is_list(list) do # check to see if list is actually a list
+      # .any? function checks to see if any of the values in the list are a list themselves
+      # returns true if any item in the list is a list
       hasSublist = Enum.any?(list, fn x -> is_list(x) end)
-      if hasSublist do
-        IO.puts "contains sublist"
-        IO.inspect list
-        IO.puts "-----"
-        nonListVars = []
-        nonListVars = Enum.filter(list, fn x -> !is_list(x) end)
-        subLists = Enum.filter(list, fn x -> is_list(x) end)
-        if length(subLists) > 0 do
-          s = flatten_list(Enum.at(subLists, 0))
-          IO.puts "sub list"
-          IO.inspect s
-          IO.puts "temp list"
-          IO.inspect nonListVars
-          IO.puts "combined list"
-          nonListVars = nonListVars ++ s
-          IO.inspect nonListVars
-          IO.puts "-----"
-          nonListVars
-        else
-          IO.puts "sub list"
-          IO.inspect subLists
-          IO.puts "-----"
-          nonListVars
-        end
+      if hasSublist do # check to see if the list has sublists
+        # reduce list that can contain sublists to a single list with a recursive call to flatten_list
+        Enum.reduce(list, [], fn x, acc -> acc  ++ flatten_list(x) end)
       else
-        IO.puts "end list"
-        IO.inspect list
-        IO.puts "-----"
+        # This is the case when we have a list that doesn't contain any sublist
+        # we just return the list
         list
       end
     else
-      IO.puts "end list: single value"
-      IO.inspect [list]
-      IO.puts "-----"
+      # If we don't have a list as an argument, then we can just return the single value as a list
       [list]
     end
   end
